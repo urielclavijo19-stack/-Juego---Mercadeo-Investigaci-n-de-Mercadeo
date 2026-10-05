@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Quién quiere ser millonario? - Investigación de Proyectos</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #131c2e;
+            --primary: #3b82f6;
+            --accent: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --option-bg: #1e293b;
+            --option-hover: #334155;
+            --correct: #22c55e;
+            --wrong: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 750px;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1, h2 {
+            margin-top: 0;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .game-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .badge {
+            background-color: #1e293b;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .badge span {
+            color: var(--accent);
+        }
+
+        /* Formulario de Registro */
+        #register-screen input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: #0b0f19;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: #0b0f19;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: #334155;
+            color: white;
+            width: auto;
+        }
+
+        /* Preguntas */
+        .nivel {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option-btn {
+            background-color: var(--option-bg);
+            border: 1px solid #334155;
+            color: var(--text-main);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: var(--option-hover);
+            border-color: var(--primary);
+        }
+
+        .option-btn.correct {
+            background-color: rgba(34, 197, 94, 0.2);
+            border-color: var(--correct);
+            color: #4ade80;
+        }
+
+        .option-btn.wrong {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-color: var(--wrong);
+            color: #f87171;
+        }
+
+        .actions-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #1e293b;
+            padding-top: 20px;
+        }
+
+        .rules-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 20px;
+            line-height: 1.3;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Pantalla de Registro -->
+    <div id="register-screen">
+        <h2>Registro de Estudiante</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Ingresa tus datos para comenzar el test de Formulación de Proyectos.</p>
+        <label for="nombre">Nombre Completo:</label>
+        <input type="text" id="nombre" placeholder="Ej. Ana María Gómez">
+        
+        <label for="cedula">Cédula o Documento de Identidad:</label>
+        <input type="text" id="cedula" placeholder="Ej. 1020304050">
+        
+        <button class="btn" onclick="iniciarJuego()">Comenzar Juego</button>
+    </div>
+
+    <!-- Pantalla del Juego -->
+    <div id="game-screen" class="hidden">
+        <div class="header-info">
+            <div class="game-title">¿Quién quiere ser millonario? · Investigación</div>
+            <div class="stats">
+                <div class="badge">Puntos: <span id="score-display">0</span></div>
+                <div class="badge">Pregunta: <span id="current-q-display">1</span>/6</div>
+            </div>
+        </div>
+
+        <div id="quiz-container">
+            <div class="nivel" id="nivel-text">Nivel 1</div>
+            <div class="question-text" id="question-text">Cargando pregunta...</div>
+            
+            <div class="options-grid" id="options-container">
+                <!-- Opciones inyectadas por JS -->
+            </div>
+
+            <div class="actions-footer">
+                <button class="btn btn-secondary" id="btn-clave" onclick="mostrarClave()">Mostrar Clave (+7 pts)</button>
+                <button class="btn btn-secondary" id="btn-saltar" onclick="saltarPregunta()">Saltar</button>
+            </div>
+        </div>
+
+        <div class="rules-info">
+            <strong>Reglas de puntaje:</strong> Acierto al primer intento = <strong>+10 pts</strong> · Acierto tras usar <em>Clave</em> = <strong>+7 pts</strong> · Acierto tras un fallo (sin clave) = <strong>+8 pts</strong>.
+        </div>
+    </div>
+
+    <!-- Pantalla de Resultados -->
+    <div id="results-screen" class="hidden" style="text-align: center;">
+        <h2>¡Juego Finalizado!</h2>
+        <p id="result-student-info" style="font-size: 1.1rem; color: var(--accent); margin-bottom: 10px;"></p>
+        <p style="font-size: 1.2rem;">Tu puntaje final es:</p>
+        <h1 id="final-score" style="font-size: 3rem; color: var(--correct); margin: 15px 0;">0 pts</h1>
+        <button class="btn" onclick="reiniciarJuego()" style="margin-top: 20px;">Volver a Jugar</button>
+    </div>
+</div>
+
+<script>
+    const preguntas = [
+        {
+            nivel: "Fase 1: Propuestas y Selección",
+            pregunta: "¿Cuál es el criterio principal para seleccionar la propuesta de investigación definitiva dentro de un equipo de trabajo?",
+            opciones: [
+                "Elegir la propuesta del integrante con más autoridad en el grupo.",
+                "Analizar la viabilidad, pertinencia, recursos disponibles y relevancia de cada opción propuesta.",
+                "Seleccionar siempre la opción más corta y fácil de desarrollar.",
+                "Votar al azar sin revisar los antecedentes de cada propuesta."
+            ],
+            correcta: 1
+        },
+        {
+            nivel: "Fase 2: Planteamiento del Problema",
+            pregunta: "Al formular la pregunta problema de investigación, esta debe cumplir principalmente con:",
+            opciones: [
+                "Ser una pregunta cerrada que se responda únicamente con un 'Sí' o 'No'.",
+                "Delimitar claramente el espacio, el tiempo, la población y la variable central de estudio.",
+                "Plantear una opinión personal o juicio de valor sobre el tema.",
+                "Incluir suposiciones falsas para comprobar si el lector sabe del tema."
+            ],
+            correcta: 1
+        },
+        {
+            nivel: "Fase 3: Objetivos de Investigación",
+            pregunta: "¿Qué característica define correctamente a un objetivo general en un proyecto?",
+            opciones: [
+                "Describe las tareas operativas paso a paso del día a día.",
+                "Refleja el propósito central y global del estudio, respondiendo a la pregunta de investigación.",
+                "Es opcional dentro de la estructura metodológica.",
+                "Debe ser idéntico a las conclusiones del trabajo final."
+            ],
+            correcta: 1
+        },
+        {
+            nivel: "Fase 4: Población y Mercado Objetivo",
+            pregunta: "En un proyecto de investigación o plan de negocios, ¿a qué se refiere la población objeto de estudio (mercado objetivo)?",
+            opciones: [
+                "Al total de habitantes del país sin importar si consumen o no el producto.",
+                "Al conjunto específico de personas o elementos que poseen las características que se desean analizar.",
+                "Únicamente a los proveedores de materia prima de la competencia.",
+                "A los inversionistas extranjeros que financiarán el proyecto."
+            ],
+            correcta: 1
+        },
+        {
+            nivel: "Fase 5: Tamaño de la Muestra",
+            pregunta: "Cuando se realiza un estudio cuantitativo, ¿por qué es importante calcular adecuadamente el tamaño de la muestra?",
+            opciones: [
+                "Para encuestar obligatoriamente al 100% de la población mundial.",
+                "Para garantizar que los datos recolectados sean representativos y estadísticamente confiables sin desperdiciar recursos.",
+                "Para evitar por completo la formulación de preguntas en el cuestionario.",
+                "Para cumplir un requisito decorativo que no afecta los resultados."
+            ],
+            correcta: 1
+        },
+        {
+            nivel: "Fase 6: Instrumento de Recolección",
+            pregunta: "Al diseñar el cuestionario de una encuesta, ¿cuál es una buena práctica recomendada?",
+            opciones: [
+                "Redactar preguntas ambiguas para que el encuestado responda lo que quiera.",
+                "Iniciar con preguntas complejas, íntimas o sensibles para medir la paciencia del usuario.",
+                "Diseñar preguntas claras, estructuradas y con opciones de respuesta lógicas alineadas con los objetivos.",
+                "Hacer un cuestionario de más de 100 preguntas para asegurar el cansancio del mercado."
+            ],
+            correcta: 2
+        }
+    ];
+
+    let estudiante = { nombre: "", cedula: "" };
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let intentoActual = 1; // 1: primer intento, 2: segundo intento (tras fallo o clave)
+    let usoClaveEnPregunta = false;
+
+    function iniciarJuego() {
+        const nombreInput = document.getElementById("nombre").value.trim();
+        const cedulaInput = document.getElementById("cedula").value.trim();
+
+        if (!nombreInput || !cedulaInput) {
+            alert("Por favor, completa tu nombre y cédula para continuar.");
+            return;
+        }
+
+        estudiante.nombre = nombreInput;
+        estudiante.cedula = cedulaInput;
+
+        document.getElementById("register-screen").classList.add("hidden");
+        document.getElementById("game-screen").classList.remove("hidden");
+        
+        cargarPregunta();
+    }
+
+    function cargarPregunta() {
+        intentoActual = 1;
+        usoClaveEnPregunta = false;
+        
+        const q = preguntas[currentQuestionIndex];
+        document.getElementById("nivel-text").innerText = q.nivel;
+        document.getElementById("question-text").innerText = `${currentQuestionIndex + 1}) ${q.pregunta}`;
+        document.getElementById("current-q-display").innerText = currentQuestionIndex + 1;
+        document.getElementById("score-display").innerText = score;
+
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        q.opciones.forEach((opcion, index) => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = opcion;
+            btn.onclick = () => seleccionarRespuesta(index, btn);
+            optionsContainer.appendChild(btn);
+        });
+
+        // Habilitar botones de ayuda
+        document.getElementById("btn-clave").disabled = false;
+        document.getElementById("btn-clave").style.opacity = "1";
+    }
+
+    function seleccionarRespuesta(indexSeleccionado, btnElement) {
+        const q = preguntas[currentQuestionIndex];
+        const botones = document.querySelectorAll(".option-btn");
+
+        // Deshabilitar botones momentáneamente
+        botones.forEach(b => b.disabled = true);
+
+        if (indexSeleccionado === q.correcta) {
+            btnElement.classList.add("correct");
+            
+            // Asignación de puntos según reglas
+            if (intentoActual === 1 && !usoClaveEnPregunta) {
+                score += 10; // Acierto al primer intento
+            } else if (usoClaveEnPregunta) {
+                score += 7;  // Acierto tras usar clave
+            } else {
+                score += 8;  // Acierto tras un fallo previo
+            }
+
+            document.getElementById("score-display").innerText = score;
+
+            setTimeout(siguientePregunta, 1500);
+        } else {
+            btnElement.classList.add("wrong");
+            
+            if (intentoActual === 1 && !usoClaveEnPregunta) {
+                // Primer fallo sin clave: permitir segundo intento por 8 puntos
+                intentoActual = 2;
+                setTimeout(() => {
+                    botones.forEach(b => {
+                        if (!b.classList.contains("wrong")) b.disabled = false;
+                    });
+                }, 1000);
+            } else {
+                // Si ya falló con clave o segundo intento, mostrar la correcta y avanzar
+                botones[q.correcta].classList.add("correct");
+                setTimeout(siguientePregunta, 2000);
+            }
+        }
+    }
+
+    function mostrarClave() {
+        usoClaveEnPregunta = true;
+        const q = preguntas[currentQuestionIndex];
+        const botones = document.querySelectorAll(".option-btn");
+
+        // Deshabilitar la opción correcta visualmente o deshabilitar dos incorrectas para facilitar
+        // Aquí iluminamos sutilmente la correcta o aplicamos la regla de 7 pts
+        botones[q.correcta].style.borderColor = varColor('--accent');
+        document.getElementById("btn-clave").disabled = true;
+        document.getElementById("btn-clave").style.opacity = "0.5";
+        alert("¡Pista activada! Esta respuesta sumará 7 puntos si acertaras ahora.");
+    }
+
+    function saltarPregunta() {
+        siguientePregunta();
+    }
+
+    function siguientePregunta() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < preguntas.length) {
+            cargarPregunta();
+        } else {
+            mostrarResultados();
+        }
+    }
+
+    function mostrarResultados() {
+        document.getElementById("game-screen").classList.add("hidden");
+        document.getElementById("results-screen").classList.remove("hidden");
+        
+        document.getElementById("result-student-info").innerText = `${estudiante.nombre} (Cédula: ${estudiante.cedula})`;
+        document.getElementById("final-score").innerText = `${score} pts`;
+    }
+
+    function reiniciarJuego() {
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById("results-screen").classList.add("hidden");
+        document.getElementById("register-screen").classList.remove("hidden");
+        document.getElementById("nombre").value = "";
+        document.getElementById("cedula").value = "";
+    }
+
+    function varColor(name) {
+        return getComputedStyle(document.documentElement).getPropertyValue(name);
+    }
+</script>
+
+</body>
+</html>
